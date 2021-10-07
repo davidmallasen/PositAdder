@@ -1,0 +1,9 @@
+# ModelSim
+*work/
+*.vhd~
+*.cr.mti
+*.mpf
+*transcript
+*.wlf
+*.vstf
+*.bak
