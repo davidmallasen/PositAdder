@@ -3,10 +3,10 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.all;
 
-entity testbench_posit_regime_extractor is
-end testbench_posit_regime_extractor;
+entity test_posit_regime_extractor is
+end test_posit_regime_extractor;
 
-architecture test of testbench_posit_regime_extractor is
+architecture test of test_posit_regime_extractor is
 
     component posit_regime_extractor
         port (
@@ -68,7 +68,7 @@ begin
             wait for 1 ns;
 
             assert(regime = 4)
-            report "Regime should be 5" 
+            report "Regime should be 4" 
             severity error;
 
             assert(y = "110011010000000")
