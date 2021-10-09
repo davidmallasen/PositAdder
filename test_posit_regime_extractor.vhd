@@ -39,8 +39,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = -1)
-            report "Regime should be -1" 
+            assert(regime = 0)
+            report "Regime should be 0" 
             severity error;
 
             assert(y = (14 downto 0 => '0'))
@@ -53,8 +53,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = 13)
-            report "Regime should be 13" 
+            assert(regime = -14)
+            report "Regime should be -14" 
             severity error;
 
             assert(y = (14 downto 0 => '0'))
@@ -67,8 +67,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = 4)
-            report "Regime should be 4" 
+            assert(regime = -5)
+            report "Regime should be -5" 
             severity error;
 
             assert(y = "110011010000000")
@@ -81,8 +81,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = 0)
-            report "Regime should be 0" 
+            assert(regime = -1)
+            report "Regime should be -1" 
             severity error;
 
             assert(y = "010011011001000")
@@ -95,8 +95,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = -8)
-            report "Regime should be -8" 
+            assert(regime = 7)
+            report "Regime should be 7" 
             severity error;
 
             assert(y = "110010000000000")
@@ -109,8 +109,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = 14)
-            report "Regime should be 14" 
+            assert(regime = -15)
+            report "Regime should be -15" 
             severity error;
 
             assert(y = "000000000000000")
@@ -123,8 +123,8 @@ begin
 
             wait for 1 ns;
 
-            assert(regime = -15)
-            report "Regime should be -15" 
+            assert(regime = 14)
+            report "Regime should be 14" 
             severity error;
 
             assert(y = "000000000000000")
