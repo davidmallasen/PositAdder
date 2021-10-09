@@ -34,13 +34,13 @@ architecture behaviour of posit16_encoder is
     component right_shifter_round
         port (
             -- Input vector
-            x        : in  std_logic_vector(17 downto 0);
+            x        : in  std_logic_vector(16 downto 0);
             -- Number of bits to shift
             count    : in  std_logic_vector(4 downto 0);
             -- Bit to prepend when shifting
             prep_bit : in std_logic;
             -- Output vector right-shifted count bits
-            y        : out std_logic_vector(17 downto 0);
+            y        : out std_logic_vector(16 downto 0);
             -- Sticky bit (OR of the discarded right bits)
             s        : out std_logic
         );
