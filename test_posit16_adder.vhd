@@ -62,7 +62,11 @@ begin
         file_close(file_in);
         file_close(file_out);
          
-        wait;
+        wait for 1 ns;
+
+        assert(false)
+        report "Simulation finished"
+        severity failure;
 
     end process;
 
