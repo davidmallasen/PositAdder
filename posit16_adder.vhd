@@ -63,9 +63,10 @@ architecture behaviour of posit16_adder is
         );
         port (
             sign    : in  std_logic;
-            sf      : out std_logic_vector(ES + R_N downto 0);
-            frac    : out std_logic_vector(F_N-1 downto 0);
-            inf     : out std_logic
+            sf      : in std_logic_vector(ES + R_N downto 0);
+            frac    : in std_logic_vector(F_N-1 downto 0);
+            inf     : in std_logic;
+            x       : out std_logic_vector(N-1 downto 0)
         );
     end component;
 
@@ -195,7 +196,8 @@ begin
             sign => sign_l,
             sf   => sf_r,
             frac => frac_r,
-            inf  => inf_r
+            inf  => inf_r,
+            x    => r
         );
 
 end behaviour;

@@ -10,7 +10,7 @@ end test_posit16_adder;
 
 architecture test of test_posit16_adder is
 
-    component test_posit16_adder
+    component posit16_adder
         port (
             x : in  std_logic_vector(15 downto 0);
             y : in  std_logic_vector(15 downto 0);
@@ -27,7 +27,7 @@ architecture test of test_posit16_adder is
 
 begin
 
-    DUT: test_posit16_adder
+    DUT: posit16_adder
         port map(
             x => x,
             y => y,

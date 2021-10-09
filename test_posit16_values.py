@@ -12,12 +12,12 @@ with open('posit_output.txt') as file:
 assert len(posit_input) == len(posit_output) * 2
 
 for i, out in enumerate(posit_output):
-    in1 = posit_input(2 * i)
-    in2 = posit_input(2 * i + 1)
+    in1 = posit_input[2 * i]
+    in2 = posit_input[2 * i + 1]
 
-    posin1 = sp.posit_2(x=16, bits=bin(int(in1, 2)))
-    posin2 = sp.posit_2(x=16, bits=bin(int(in2, 2)))
-    posout = sp.posit_2(x=16, bits=bin(int(out, 2)))
+    posin1 = sp.posit_2(x=16, bits=int(in1, 2))
+    posin2 = sp.posit_2(x=16, bits=int(in2, 2))
+    posout = sp.posit_2(x=16, bits=int(out, 2))
 
     psum = posin1 + posin2
 
