@@ -63,6 +63,20 @@ begin
 
             ----------
 
+            x <= (11 downto 0 => '0');
+
+            wait for 1 ns;
+
+            assert(nlzeros = 12)
+            report "zeros and nlzeros != 12" 
+            severity error;
+
+            assert(y = (11 downto 0 => '0'))
+            report "zeros and y != zeros" 
+            severity error;
+
+            ----------
+
             x <= "000001110011";
 
             wait for 1 ns;

@@ -7,7 +7,7 @@ use work.all;
 -- Muller et al. 2018 Handbook of Floating-Point Arithmetic 8.2.7.3
 entity LZcountshift_12b is
     port (
-        -- Input vector that contains at lease one 1
+        -- Input vector
         x       : in  std_logic_vector(11 downto 0);
         -- Number of leading zeros
         nlzeros : out unsigned(3 downto 0);
@@ -28,6 +28,8 @@ architecture behaviour of LZcountshift_12b is
     signal d_2 : std_logic;
     signal d_1 : std_logic;
     signal d_0 : std_logic;
+
+    signal nlzeros_tmp : unsigned(3 downto 0);
 
 begin
     
@@ -73,7 +75,9 @@ begin
         end if;
     end process;
 
-    nlzeros <= d_3 & d_2 & d_1 & d_0;
+    nlzeros_tmp <= d_3 & d_2 & d_1 & d_0;
+    -- If x is all zeros, nlzeros_tmp will not represent accurately the number of zeros
+    nlzeros <= "1100" when nlzeros_tmp > 12 else nlzeros_tmp;
     y <= x_0;
 
 end behaviour;
