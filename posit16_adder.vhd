@@ -85,7 +85,7 @@ architecture behaviour of posit16_adder is
     signal frac_l : std_logic_vector(11 downto 0);
     signal frac_s : std_logic_vector(11 downto 0);
     signal frac_s_shift : std_logic_vector(11 downto 0);
-    signal frac_add : std_logic_vector(11 downto 0);
+    signal frac_add : std_logic_vector(12 downto 0);
     signal frac_r : std_logic_vector(11 downto 0);
     signal frac_r_shift : std_logic_vector(11 downto 0);
 
@@ -170,13 +170,13 @@ begin
         );
 
     -- Add the fractions
-    frac_add <= std_logic_vector(unsigned(frac_l) - unsigned(frac_s_shift)) when (sign_x xor sign_y) = '1' else 
-                std_logic_vector(unsigned(frac_l) + unsigned(frac_s_shift));
+    frac_add <= std_logic_vector(unsigned('0' & frac_l) - unsigned('0' & frac_s_shift)) when (sign_x xor sign_y) = '1' else 
+                std_logic_vector(unsigned('0' & frac_l) + unsigned('0' & frac_s_shift));
     
-    ovf_r <= frac_add(11);
+    ovf_r <= frac_add(12);
 
     frac_r <= '0' & frac_add(11 downto 1) when ovf_r = '1' else
-              frac_add;
+              frac_add(11 downto 0);
 
     inst_LZcountshift : LZcountshift_12b
         port map (
