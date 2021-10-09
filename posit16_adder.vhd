@@ -14,52 +14,60 @@ end posit16_adder;
 architecture behaviour of posit16_adder is
 
     component posit16_decoder is
-    generic (
-        N   : integer := 16;
-        ES  : integer := 2;
-        R_N : integer := 4;
-        F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
-    );
-    port (
-        x       : in  std_logic_vector(N-1 downto 0);
-        sign    : out std_logic;
-        regime  : out signed(R_N downto 0);
-        exp     : out std_logic_vector(ES-1 downto 0);
-        frac    : out std_logic_vector(F_N-1 downto 0);
-        x_abs   : out std_logic_vector(N-2 downto 0);
-        zero    : out std_logic;
-        inf     : out std_logic
-    );
+        generic (
+            N   : integer := 16;
+            ES  : integer := 2;
+            R_N : integer := 4;
+            F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
+        );
+        port (
+            x       : in  std_logic_vector(N-1 downto 0);
+            sign    : out std_logic;
+            regime  : out signed(R_N downto 0);
+            exp     : out std_logic_vector(ES-1 downto 0);
+            frac    : out std_logic_vector(F_N-1 downto 0);
+            x_abs   : out std_logic_vector(N-2 downto 0);
+            zero    : out std_logic;
+            inf     : out std_logic
+        );
     end component;
 
     component right_shifter_12b
-    port (
-        -- Input vector
-        x     : in  std_logic_vector(11 downto 0);
-        -- Number of bits to shift
-        count : in  std_logic_vector(3 downto 0);
-        -- Output vector right-shifted count bits
-        y     : out std_logic_vector(11 downto 0)
-    );
+        port (
+            -- Input vector
+            x     : in  std_logic_vector(11 downto 0);
+            -- Number of bits to shift
+            count : in  std_logic_vector(3 downto 0);
+            -- Output vector right-shifted count bits
+            y     : out std_logic_vector(11 downto 0)
+        );
     end component;
 
     component LZcountshift_12b
-    port (
-        -- Input vector that contains at lease one 1
-        x       : in  std_logic_vector(11 downto 0);
-        -- Number of leading zeros
-        nlzeros : out unsigned(3 downto 0);
-        -- Output vector left-shifted nlzeros bits
-        y       : out std_logic_vector(11 downto 0)
-    );
+        port (
+            -- Input vector that contains at lease one 1
+            x       : in  std_logic_vector(11 downto 0);
+            -- Number of leading zeros
+            nlzeros : out unsigned(3 downto 0);
+            -- Output vector left-shifted nlzeros bits
+            y       : out std_logic_vector(11 downto 0)
+        );
     end component;
 
-    --component encoder
-    --    port (
-    --        x : out std_logic_vector(15 downto 0)
-    --        -- TODO
-    --    );
-    --end component;
+    component posit16_encoder is
+        generic (
+            N   : integer := 16;
+            ES  : integer := 2;
+            R_N : integer := 4;
+            F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
+        );
+        port (
+            sign    : in  std_logic;
+            sf      : out std_logic_vector(ES + R_N downto 0);
+            frac    : out std_logic_vector(F_N-1 downto 0);
+            inf     : out std_logic
+        );
+    end component;
 
     signal sign_x : std_logic;
     signal sign_y : std_logic;
@@ -182,9 +190,12 @@ begin
 
     inf_r <= inf_x or inf_y;
 
-    --inst_encoder : encoder
-    --    port map (
-    --        -- TODO
-    --    );
+    inst_encoder : posit16_encoder
+        port map (
+            sign => sign_l,
+            sf   => sf_r,
+            frac => frac_r,
+            inf  => inf_r
+        );
 
 end behaviour;

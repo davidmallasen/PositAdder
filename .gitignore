@@ -7,3 +7,9 @@
 *.wlf
 *.vstf
 *.bak
+
+# Python
+*venv/
+
+posit_input.txt
+posit_output.txt
