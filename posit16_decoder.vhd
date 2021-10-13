@@ -25,6 +25,7 @@ end posit16_decoder;
 architecture behaviour of posit16_decoder is
     signal nzero : std_logic;
     signal tmp_abs : std_logic_vector(N-2 downto 0);
+    signal int_x_abs : std_logic_vector(N-2 downto 0);
 
     component posit_regime_extractor
         port (
@@ -41,18 +42,19 @@ begin
     -- Sign extraction
     sign <= x(N-1);
     -- Zero and infinite checks
-    nzero <= or x(N-2 downto 0);
+    nzero <= '0' when x(N-2 downto 0) = (N-2 downto 0 => '0') else '1';
     zero <= not (x(N-1) or nzero);
     inf <= x(N-1) and (not nzero);
     -- Get absolute value if 'x' is a negative number
-    x_abs <= std_logic_vector(unsigned(not(x(N-2 downto 0))) + 1) when (x(N-1) = '1') else x(N-2 downto 0);
+    int_x_abs <= std_logic_vector(unsigned(not(x(N-2 downto 0))) + 1) when (x(N-1) = '1') else x(N-2 downto 0);
     -- Regime extraction
     REGIME_EXT: posit_regime_extractor
         port map(
-            x => x_abs,
+            x => int_x_abs,
             regime => regime,
             y => tmp_abs
         );
+    x_abs <= int_x_abs;
     -- Exponent extraction
     exp <= tmp_abs(N-2 downto N-3);
     -- Fraction bits extraction

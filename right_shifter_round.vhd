@@ -41,27 +41,33 @@ begin
     x_4 <= x_5 when count(4) = '0' else
            (15 downto 0 => prep_bit) & x_4(16 downto 16);
     s_4 <= '0' when count(4) = '0' else
-           or x_5(15 downto 0);
+           -- or x_5(15 downto 0) in vhdl 2008
+           '0' when x_5(15 downto 0) = (15 downto 0 => '0') else 
+           '1';
 
     x_3 <= x_4 when count(3) = '0' else
            (7 downto 0 => prep_bit) & x_4(16 downto 8);
     s_3 <= '0' when count(3) = '0' else
-           or x_4(7 downto 0);
+           '0' when x_4(7 downto 0) = (7 downto 0 => '0') else 
+           '1';
 
     x_2 <= x_3 when count(2) = '0' else
            (3 downto 0 => prep_bit) & x_3(16 downto 4);
     s_2 <= '0' when count(2) = '0' else
-           or x_3(3 downto 0);
+           '0' when x_3(3 downto 0) = (3 downto 0 => '0') else 
+           '1';
 
     x_1 <= x_2 when count(1) = '0' else
            (1 downto 0 => prep_bit) & x_2(16 downto 2);
     s_1 <= '0' when count(1) = '0' else
-           or x_2(1 downto 0);
+           '0' when x_2(1 downto 0) = (1 downto 0 => '0') else 
+           '1';
 
     x_0 <= x_1 when count(0) = '0' else
            (0 downto 0 => prep_bit) & x_1(16 downto 1);
     s_0 <= '0' when count(0) = '0' else
-           or x_1(0 downto 0);
+           '0' when x_1(0 downto 0) = (0 downto 0 => '0') else 
+           '1';
    
     y <= x_0;
     s <= s_4 or s_3 or s_2 or s_1 or s_0;

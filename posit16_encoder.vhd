@@ -30,6 +30,7 @@ architecture behaviour of posit16_encoder is
     signal r_bit    : std_logic;
     signal s_bit    : std_logic;
     signal round    : std_logic;
+    signal not_sf   : std_logic;
 
     component right_shifter_round
         port (
@@ -62,11 +63,12 @@ begin
     end process;
     -- Right-shift 'tmp', 'offset' bits prepending ¬sf[MSB] to the left
     -- and OR the discarded bits from the right.
+    not_sf <= not sf(ES + R_N);
     shifter_round: right_shifter_round
         port map(
             x => tmp,
             count => offset,
-            prep_bit => not sf(ES + R_N),
+            prep_bit => not_sf,
             y => ans_tmp,
             s => s_bit
         );
@@ -80,10 +82,8 @@ begin
     begin
         if inf = '1' then
             x <= x"8000";
-        elsif sign = '1' then
-            x <= '1' & std_logic_vector(unsigned(not(ans_tmp(N downto 2))) + round + 1);
         else
-            x <= '0' & std_logic_vector(unsigned(ans_tmp(N downto 2)) + round);
+            x <= sign & std_logic_vector(unsigned(not(ans_tmp(N downto 2))) + (round & "") + (sign & ""));
         end if;          
     end process;
 end behaviour;
