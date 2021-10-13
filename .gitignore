@@ -8,8 +8,19 @@
 *.vstf
 *.bak
 
+# Quartus
+*db/
+*output_files/
+*devkits/
+*.qpf
+*.qsf
+*.qws
+*.rpt
+
 # Python
 *venv/
 
+# Misc
+*.png
 posit_input.txt
 posit_output.txt
