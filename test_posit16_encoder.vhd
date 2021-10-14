@@ -138,8 +138,19 @@ begin
         frac <= "100010111011";
         inf <= '0';
         wait for 1 ns;
-        assert(x = "0110000001011101")
-        report "Test 9 should be 0110000001011101"
+        assert(x = "0110000001011110")
+        report "Test 9 should be 0110000001011110"
+        severity error;
+
+        -- Test 10
+
+        sign <= '1';
+        sf <= "00001" & "11";
+        frac <= "101001000011";
+        inf <= '0';
+        wait for 1 ns;
+        assert(x = "1001001011011110")
+        report "Test 10 should be 1001001011011110"
         severity error;
 
     end process;

@@ -82,8 +82,10 @@ begin
     begin
         if inf = '1' then
             x <= x"8000";
+        elsif sign = '1' then
+            x <= '1' & std_logic_vector(not(unsigned(ans_tmp(N downto 2)) + (round & "")) + 1);
         else
-            x <= sign & std_logic_vector(unsigned(not(ans_tmp(N downto 2))) + (round & "") + (sign & ""));
+            x <= '0' & std_logic_vector(unsigned(ans_tmp(N downto 2)) + (round & ""));
         end if;          
     end process;
 end behaviour;

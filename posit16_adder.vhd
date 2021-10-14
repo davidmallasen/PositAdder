@@ -85,6 +85,7 @@ architecture behaviour of posit16_adder is
     signal frac_l : std_logic_vector(11 downto 0);
     signal frac_s : std_logic_vector(11 downto 0);
     signal frac_s_shift : std_logic_vector(11 downto 0);
+    signal frac_s_add : std_logic_vector(11 downto 0);
     signal frac_add : std_logic_vector(12 downto 0);
     signal frac_r : std_logic_vector(11 downto 0);
     signal frac_r_shift : std_logic_vector(11 downto 0);
@@ -99,14 +100,12 @@ architecture behaviour of posit16_adder is
     signal sf_x : std_logic_vector(6 downto 0);
     signal sf_y : std_logic_vector(6 downto 0);
     signal sf_l : std_logic_vector(6 downto 0);
-    signal sf_s : std_logic_vector(6 downto 0);
     signal sf_r : std_logic_vector(6 downto 0);
-    signal sf_r_tmp : signed(6 downto 0);
 
     signal offset_tmp : signed(6 downto 0);
     signal offset : std_logic_vector(3 downto 0);
 
-    signal ovf_r : std_logic;
+    signal ovf_r : std_logic_vector(0 downto 0);
 
     signal nzeros : unsigned(3 downto 0);
 
@@ -146,19 +145,17 @@ begin
             sign_l <= sign_x;
             sf_l   <= sf_x;
             frac_l <= frac_x;
-            sf_s   <= sf_y;
             frac_s <= frac_y;
         else
             sign_l <= sign_y;
             sf_l   <= sf_y;
             frac_l <= frac_y;
-            sf_s   <= sf_x;
             frac_s <= frac_x;
         end if;
     end process;
 
     -- Align the significands
-    offset_tmp <= signed(sf_l) - signed(sf_s);
+    offset_tmp <= abs(signed(sf_x) - signed(sf_y));
     offset <= std_logic_vector(offset_tmp(3 downto 0)) when offset_tmp < 16 else
               (others => '1');
 
@@ -167,15 +164,16 @@ begin
             x     => frac_s,
             count => offset,
             y     => frac_s_shift
-        );
+        ); -- TODO: Add sticky?
 
     -- Add the fractions
-    frac_add <= std_logic_vector(unsigned('0' & frac_l) - unsigned('0' & frac_s_shift)) when (sign_x xor sign_y) = '1' else 
-                std_logic_vector(unsigned('0' & frac_l) + unsigned('0' & frac_s_shift));
+    frac_s_add <= std_logic_vector(unsigned(not(frac_s_shift)) + 1) when (sign_x xor sign_y) = '1' else
+                  frac_s_shift;
+    frac_add <= std_logic_vector(unsigned('0' & frac_l) + unsigned('0' & frac_s_add));
     
-    ovf_r <= frac_add(12);
+    ovf_r <= frac_add(12 downto 12);
 
-    frac_r <= '0' & frac_add(11 downto 1) when ovf_r = '1' else
+    frac_r <= '0' & frac_add(11 downto 1) when ovf_r = "1" else
               frac_add(11 downto 0);
 
     inst_LZcountshift : LZcountshift_12b
@@ -185,9 +183,7 @@ begin
             y       => frac_r_shift
         );
 
-    sf_r_tmp <= signed(sf_l) - signed(nzeros);
-    sf_r <= std_logic_vector(sf_r_tmp + 1) when ovf_r = '1' else
-            std_logic_vector(sf_r_tmp);
+    sf_r <= std_logic_vector(signed(sf_l) + signed("0" & ovf_r) - signed("0" & nzeros));
 
     inf_r <= inf_x or inf_y;
 
@@ -195,7 +191,7 @@ begin
         port map (
             sign => sign_l,
             sf   => sf_r,
-            frac => frac_r,
+            frac => frac_r_shift,
             inf  => inf_r,
             x    => r
         );
