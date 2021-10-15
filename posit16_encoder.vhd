@@ -5,26 +5,26 @@ use work.all;
 
 entity posit16_encoder is
     port (
-        sign    : in std_logic;
-        sf      : in std_logic_vector(6 downto 0);
-        frac    : in std_logic_vector(14 downto 0);
-        inf     : in std_logic;
-        x       : out std_logic_vector(15 downto 0)
+        sign : in  std_logic;
+        sf   : in  std_logic_vector(6 downto 0);
+        frac : in  std_logic_vector(14 downto 0);
+        inf  : in  std_logic;
+        x    : out std_logic_vector(15 downto 0)
     );
 end posit16_encoder;
 
 architecture behaviour of posit16_encoder is
 
-    signal exp      : std_logic_vector(1 downto 0);
-    signal tmp      : std_logic_vector(17 downto 0);
-    signal ans_tmp  : std_logic_vector(17 downto 0);
-    signal offset   : std_logic_vector(4 downto 0);
-    signal l_bit    : std_logic;
-    signal g_bit    : std_logic;
-    signal r_bit    : std_logic;
-    signal s_bit    : std_logic;
-    signal round    : std_logic;
-    signal not_sf   : std_logic;
+    signal exp     : std_logic_vector(1 downto 0);
+    signal tmp     : std_logic_vector(17 downto 0);
+    signal ans_tmp : std_logic_vector(17 downto 0);
+    signal offset  : std_logic_vector(4 downto 0);
+    signal l_bit   : std_logic;
+    signal g_bit   : std_logic;
+    signal r_bit   : std_logic;
+    signal s_bit   : std_logic;
+    signal round   : std_logic;
+    signal not_sf  : std_logic;
 
     component right_shifter_round
         port (
@@ -33,7 +33,7 @@ architecture behaviour of posit16_encoder is
             -- Number of bits to shift
             count    : in  std_logic_vector(4 downto 0);
             -- Bit to prepend when shifting
-            prep_bit : in std_logic;
+            prep_bit : in  std_logic;
             -- Output vector right-shifted count bits
             y        : out std_logic_vector(17 downto 0);
             -- Sticky bit (OR of the discarded right bits)
@@ -45,6 +45,7 @@ begin
     -- Exponent extraction
     exp <= sf(1 downto 0);
 
+    -- Start building the final result
     process(sf, exp, frac)
     begin
         if sf(6) = '1' then
@@ -55,23 +56,25 @@ begin
             offset <= sf(6 downto 2);
         end if;
     end process;
+
     -- Right-shift 'tmp', 'offset' bits prepending ¬sf[MSB] to the left
     -- and OR the discarded bits from the right.
     not_sf <= not sf(6);
     shifter_round: right_shifter_round
         port map(
-            x => tmp,
-            count => offset,
+            x        => tmp,
+            count    => offset,
             prep_bit => not_sf,
-            y => ans_tmp,
-            s => open
+            y        => ans_tmp
         );
+
     -- Round bit calculation
     l_bit <= ans_tmp(3);
     g_bit <= ans_tmp(2);
     r_bit <= ans_tmp(1);
     s_bit <= ans_tmp(0);
     round <= g_bit and (l_bit or r_bit or s_bit);
+
     -- Result construction
     process(inf, sign, ans_tmp, round)
     begin
@@ -83,4 +86,5 @@ begin
             x <= '0' & std_logic_vector(unsigned(ans_tmp(17 downto 3)) + (round & ""));
         end if;          
     end process;
+    
 end behaviour;

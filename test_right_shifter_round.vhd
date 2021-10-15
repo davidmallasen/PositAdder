@@ -10,17 +10,17 @@ architecture test of test_right_shifter_round is
 
     component right_shifter_round
         port (
-        -- Input vector
-        x        : in  std_logic_vector(17 downto 0);
-        -- Number of bits to shift
-        count    : in  std_logic_vector(4 downto 0);
-        -- Bit to prepend when shifting
-        prep_bit : in std_logic;
-        -- Output vector right-shifted count bits
-        y        : out std_logic_vector(17 downto 0);
-        -- Sticky bit (OR of the discarded right bits)
-        s        : out std_logic
-    );
+            -- Input vector
+            x        : in  std_logic_vector(17 downto 0);
+            -- Number of bits to shift
+            count    : in  std_logic_vector(4 downto 0);
+            -- Bit to prepend when shifting
+            prep_bit : in  std_logic;
+            -- Output vector right-shifted count bits
+            y        : out std_logic_vector(17 downto 0);
+            -- Sticky bit (OR of the discarded right bits)
+            s        : out std_logic
+        );
     end component;
 
     signal x        : std_logic_vector(17 downto 0);

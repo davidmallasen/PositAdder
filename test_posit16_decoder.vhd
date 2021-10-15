@@ -4,47 +4,43 @@ use ieee.numeric_std.all;
 use work.all;
 
 entity test_posit16_decoder is
-    generic (
-        N   : integer := 16;
-        ES  : integer := 2;
-        R_N : integer := 4;
-        F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
-    );
 end test_posit16_decoder;
 
 architecture test of test_posit16_decoder is
     component posit16_decoder
-    port (
-        x       : in  std_logic_vector(N-1 downto 0);
-        sign    : out std_logic;
-        regime  : out signed(R_N downto 0);
-        exp     : out std_logic_vector(ES-1 downto 0);
-        frac    : out std_logic_vector(F_N-1 downto 0);
-        x_abs   : out std_logic_vector(N-2 downto 0);
-        zero    : out std_logic;
-        inf     : out std_logic
-    );
+        port (
+            x      : in  std_logic_vector(15 downto 0);
+            sign   : out std_logic;
+            regime : out signed(4 downto 0);
+            exp    : out std_logic_vector(1 downto 0);
+            frac   : out std_logic_vector(11 downto 0);
+            x_abs  : out std_logic_vector(14 downto 0);
+            zero   : out std_logic;
+            inf    : out std_logic
+        );
     end component;
 
-    signal x       : std_logic_vector(N-1 downto 0);
-    signal sign    : std_logic;
-    signal regime  : signed(R_N downto 0);
-    signal exp     : std_logic_vector(ES-1 downto 0);
-    signal frac    : std_logic_vector(F_N-1 downto 0);
-    signal x_abs   : std_logic_vector(N-2 downto 0);
-    signal zero    : std_logic;
-    signal inf     : std_logic;
+    signal x      : std_logic_vector(15 downto 0);
+    signal sign   : std_logic;
+    signal regime : signed(4 downto 0);
+    signal exp    : std_logic_vector(1 downto 0);
+    signal frac   : std_logic_vector(11 downto 0);
+    signal x_abs  : std_logic_vector(14 downto 0);
+    signal zero   : std_logic;
+    signal inf    : std_logic;
+
 begin
+
     DUT: posit16_decoder
         port map(
-            x => x,
-            sign => sign,
+            x      => x,
+            sign   => sign,
             regime => regime,
-            exp => exp,
-            frac => frac,
-            x_abs => x_abs,
-            zero => zero,
-            inf => inf
+            exp    => exp,
+            frac   => frac,
+            x_abs  => x_abs,
+            zero   => zero,
+            inf    => inf
         );
 
     process

@@ -11,11 +11,9 @@ entity right_shifter_round is
         -- Number of bits to shift
         count    : in  std_logic_vector(4 downto 0);
         -- Bit to prepend when shifting
-        prep_bit : in std_logic;
+        prep_bit : in  std_logic;
         -- Output vector right-shifted count bits
-        y        : out std_logic_vector(17 downto 0);
-        -- Sticky bit (OR of the discarded right bits)
-        s        : out std_logic
+        y        : out std_logic_vector(17 downto 0)
     );
 end right_shifter_round;
 
@@ -42,7 +40,6 @@ begin
     x_4 <= x_5 when count(4) = '0' else
            (15 downto 0 => prep_bit) & x_4(17 downto 16);
     s_4 <= '0' when count(4) = '0' else
-           -- or x_5(15 downto 0) in vhdl 2008
            '0' when x_5(15 downto 0) = (15 downto 0 => '0') else 
            '1';
 
@@ -71,7 +68,7 @@ begin
            '1';
 
     s_tmp <= s_4 or s_3 or s_2 or s_1 or s_0;
+    
     y <= x_0(17 downto 1) & (x_0(0) or s_tmp);
-    s <= s_tmp;
 
 end behaviour;

@@ -3,18 +3,18 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.all;
 
-entity test_right_shifter_12b is
-end test_right_shifter_12b;
+entity test_right_shifter_extender is
+end test_right_shifter_extender;
 
-architecture test of test_right_shifter_12b is
+architecture test of test_right_shifter_extender is
 
-    component right_shifter_12b
+    component right_shifter_extender
         port (
             -- Input vector
             x     : in  std_logic_vector(11 downto 0);
             -- Number of bits to shift
             count : in  std_logic_vector(3 downto 0);
-            -- Output vector right-shifted count bits
+            -- Output vector right-shifted count bits which keeps sticky bits to the right
             y     : out std_logic_vector(14 downto 0)
         );
     end component;
@@ -25,11 +25,11 @@ architecture test of test_right_shifter_12b is
 
 begin
 
-    DUT: right_shifter_12b
+    DUT: right_shifter_extender
         port map(
-            x => x,
+            x     => x,
             count => count,
-            y => y
+            y     => y
         );
             
         process

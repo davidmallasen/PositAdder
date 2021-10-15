@@ -5,7 +5,7 @@ use work.all;
 
 -- Leading zero counter + shifter
 -- Muller et al. 2018 Handbook of Floating-Point Arithmetic 8.2.7.3
-entity LZcountshift_12b is
+entity LZcountshift is
     port (
         -- Input vector
         x       : in  std_logic_vector(13 downto 0);
@@ -14,9 +14,9 @@ entity LZcountshift_12b is
         -- Output vector left-shifted nlzeros bits
         y       : out std_logic_vector(13 downto 0)
     );
-end LZcountshift_12b;
+end LZcountshift;
 
-architecture behaviour of LZcountshift_12b is
+architecture behaviour of LZcountshift is
 
     signal x_4 : std_logic_vector(13 downto 0);
     signal x_3 : std_logic_vector(13 downto 0);
@@ -29,8 +29,7 @@ architecture behaviour of LZcountshift_12b is
     signal d_1 : std_logic;
     signal d_0 : std_logic;
 
-    -- signal nlzeros_tmp : unsigned(3 downto 0);
-
+    signal nlzeros_tmp : unsigned(3 downto 0);
 begin
     
     x_4 <= x;
@@ -75,10 +74,9 @@ begin
         end if;
     end process;
 
-    nlzeros <= d_3 & d_2 & d_1 & d_0;
-    -- If x is all zeros, nlzeros_tmp will not represent accurately the number of zeros
-    -- nlzeros_tmp <= d_3 & d_2 & d_1 & d_0;
-    -- nlzeros <= "1111" when nlzeros_tmp > 15 else nlzeros_tmp;
+    nlzeros_tmp <= d_3 & d_2 & d_1 & d_0;
+    nlzeros <= "1110" when nlzeros_tmp = 15 else
+               nlzeros_tmp;
     y <= x_0;
 
 end behaviour;

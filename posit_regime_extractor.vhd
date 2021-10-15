@@ -8,11 +8,11 @@ use work.all;
 entity posit_regime_extractor is
     port (
         -- Input posit vector without sign bit
-        x       : in  std_logic_vector(14 downto 0);
+        x      : in  std_logic_vector(14 downto 0);
         -- Final regime value of x
-        regime  : out signed(4 downto 0);
+        regime : out signed(4 downto 0);
         -- Output posit vector with regime bits shifted out
-        y       : out std_logic_vector(14 downto 0)
+        y      : out std_logic_vector(14 downto 0)
     );
 end posit_regime_extractor;
 
@@ -77,8 +77,11 @@ begin
 
     -- Compute final regime value 'k'
     nlzeros <= '0' & d_3 & d_2 & d_1 & d_0;
-    regime <= (nlzeros - 1) when (x(14) = '1') else (0 - nlzeros);
-    -- Shift last regime bit
-    y <= (not x_0(13 downto 0)) & "0" when (x(14) = '1') else x_0(13 downto 0) & "0";
+    regime <= nlzeros - 1 when x(14) = '1' else 
+              0 - nlzeros;
+
+    -- Revert initial inversion and shift last regime bit
+    y <= (not x_0(13 downto 0)) & "0" when x(14) = '1' else 
+         x_0(13 downto 0) & "0";
 
 end behaviour;

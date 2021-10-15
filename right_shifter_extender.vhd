@@ -3,19 +3,19 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.all;
 
--- Right shifter
-entity right_shifter_12b is
+-- Right shifter that extends the input vector and keeps the discarded bits as a sticky bit
+entity right_shifter_extender is
     port (
         -- Input vector
         x     : in  std_logic_vector(11 downto 0);
         -- Number of bits to shift
         count : in  std_logic_vector(3 downto 0);
-        -- Output vector right-shifted count bits
+        -- Output vector right-shifted count bits which keeps sticky bits to the right
         y     : out std_logic_vector(14 downto 0)
     );
-end right_shifter_12b;
+end right_shifter_extender;
 
-architecture behaviour of right_shifter_12b is
+architecture behaviour of right_shifter_extender is
 
     signal x_4 : std_logic_vector(14 downto 0);
     signal x_3 : std_logic_vector(14 downto 0);

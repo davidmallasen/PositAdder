@@ -11,11 +11,11 @@ architecture test of test_posit_regime_extractor is
     component posit_regime_extractor
         port (
             -- Input posit vector without sign bit
-            x       : in  std_logic_vector(14 downto 0);
+            x      : in  std_logic_vector(14 downto 0);
             -- Final regime value of x
-            regime  : out signed(4 downto 0);
+            regime : out signed(4 downto 0);
             -- Output posit vector with regime bits shifted out
-            y       : out std_logic_vector(14 downto 0)
+            y      : out std_logic_vector(14 downto 0)
         );
     end component;
 
@@ -27,9 +27,9 @@ begin
 
     DUT: posit_regime_extractor
         port map(
-            x => x,
+            x      => x,
             regime => regime,
-            y => y
+            y      => y
         );
             
         process

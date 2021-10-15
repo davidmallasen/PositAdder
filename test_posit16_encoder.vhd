@@ -17,9 +17,9 @@ architecture test of test_posit16_encoder is
     component posit16_encoder
         port (
             sign    : in  std_logic;
-            sf      : in std_logic_vector(6 downto 0);
-            frac    : in std_logic_vector(14 downto 0);
-            inf     : in std_logic;
+            sf      : in  std_logic_vector(6 downto 0);
+            frac    : in  std_logic_vector(14 downto 0);
+            inf     : in  std_logic;
             x       : out std_logic_vector(15 downto 0)
         );
     end component;
@@ -29,10 +29,10 @@ begin
     DUT: posit16_encoder
         port map(
             sign => sign,
-            sf => sf,
+            sf   => sf,
             frac => frac,
-            inf => inf,
-            x => x
+            inf  => inf,
+            x    => x
         );
 
     process
