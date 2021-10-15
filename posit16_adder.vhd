@@ -40,11 +40,11 @@ architecture behaviour of posit16_adder is
     component LZcountshift_12b
         port (
             -- Input vector that contains at lease one 1
-            x       : in  std_logic_vector(14 downto 0);
+            x       : in  std_logic_vector(13 downto 0);
             -- Number of leading zeros
             nlzeros : out unsigned(3 downto 0);
             -- Output vector left-shifted nlzeros bits
-            y       : out std_logic_vector(14 downto 0)
+            y       : out std_logic_vector(13 downto 0)
         );
     end component;
 
@@ -73,10 +73,11 @@ architecture behaviour of posit16_adder is
     signal frac_l : std_logic_vector(11 downto 0);
     signal frac_s : std_logic_vector(11 downto 0);
     signal frac_s_shift : std_logic_vector(14 downto 0);
-    signal frac_s_add : std_logic_vector(14 downto 0);
+    signal frac_s_add : std_logic_vector(15 downto 0);
     signal frac_add : std_logic_vector(15 downto 0);
     signal frac_r : std_logic_vector(14 downto 0);
-    signal frac_r_shift : std_logic_vector(14 downto 0);
+    signal frac_r_shift : std_logic_vector(13 downto 0);
+    signal frac_r_shift_sticky : std_logic_vector(14 downto 0);
 
     signal abs_x : std_logic_vector(14 downto 0);
     signal abs_y : std_logic_vector(14 downto 0);
@@ -155,9 +156,9 @@ begin
         );
 
     -- Add the fractions
-    frac_s_add <= std_logic_vector(unsigned(not(frac_s_shift)) + 1) when (sign_x xor sign_y) = '1' else
-                  frac_s_shift;
-    frac_add <= std_logic_vector(unsigned('0' & frac_l & "000") + unsigned('0' & frac_s_add));
+    frac_s_add <= std_logic_vector(unsigned(not('0' & frac_s_shift)) + 1) when (sign_x xor sign_y) = '1' else
+                  '0' & frac_s_shift;
+    frac_add <= std_logic_vector(unsigned('0' & frac_l & "000") + unsigned(frac_s_add));
     
     ovf_r <= frac_add(15 downto 15);
 
@@ -166,10 +167,11 @@ begin
 
     inst_LZcountshift : LZcountshift_12b
         port map (
-            x       => frac_r,
+            x       => frac_r(14 downto 1),
             nlzeros => nzeros,
             y       => frac_r_shift
         );
+    frac_r_shift_sticky <= frac_r_shift & frac_r(0);
 
     sf_r <= std_logic_vector(signed(sf_l) + signed("0" & ovf_r) - signed("0" & nzeros));
 
@@ -179,7 +181,7 @@ begin
         port map (
             sign => sign_l,
             sf   => sf_r,
-            frac => frac_r_shift,
+            frac => frac_r_shift_sticky,
             inf  => inf_r,
             x    => r
         );
