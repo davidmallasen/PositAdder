@@ -14,19 +14,13 @@ end posit16_adder;
 architecture behaviour of posit16_adder is
 
     component posit16_decoder is
-        generic (
-            N   : integer := 16;
-            ES  : integer := 2;
-            R_N : integer := 4;
-            F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
-        );
         port (
-            x       : in  std_logic_vector(N-1 downto 0);
+            x       : in  std_logic_vector(15 downto 0);
             sign    : out std_logic;
-            regime  : out signed(R_N downto 0);
-            exp     : out std_logic_vector(ES-1 downto 0);
-            frac    : out std_logic_vector(F_N-1 downto 0);
-            x_abs   : out std_logic_vector(N-2 downto 0);
+            regime  : out signed(4 downto 0);
+            exp     : out std_logic_vector(1 downto 0);
+            frac    : out std_logic_vector(11 downto 0);
+            x_abs   : out std_logic_vector(14 downto 0);
             zero    : out std_logic;
             inf     : out std_logic
         );
@@ -39,34 +33,28 @@ architecture behaviour of posit16_adder is
             -- Number of bits to shift
             count : in  std_logic_vector(3 downto 0);
             -- Output vector right-shifted count bits
-            y     : out std_logic_vector(11 downto 0)
+            y     : out std_logic_vector(14 downto 0)
         );
     end component;
 
     component LZcountshift_12b
         port (
             -- Input vector that contains at lease one 1
-            x       : in  std_logic_vector(11 downto 0);
+            x       : in  std_logic_vector(14 downto 0);
             -- Number of leading zeros
             nlzeros : out unsigned(3 downto 0);
             -- Output vector left-shifted nlzeros bits
-            y       : out std_logic_vector(11 downto 0)
+            y       : out std_logic_vector(14 downto 0)
         );
     end component;
 
     component posit16_encoder is
-        generic (
-            N   : integer := 16;
-            ES  : integer := 2;
-            R_N : integer := 4;
-            F_N : integer := 16-3-2+1 -- {N - (sign and minimum regime) - ES + (hidden fraction bit)}
-        );
         port (
             sign    : in  std_logic;
-            sf      : in std_logic_vector(ES + R_N downto 0);
-            frac    : in std_logic_vector(F_N-1 downto 0);
+            sf      : in std_logic_vector(6 downto 0);
+            frac    : in std_logic_vector(14 downto 0);
             inf     : in std_logic;
-            x       : out std_logic_vector(N-1 downto 0)
+            x       : out std_logic_vector(15 downto 0)
         );
     end component;
 
@@ -84,11 +72,11 @@ architecture behaviour of posit16_adder is
     signal frac_y : std_logic_vector(11 downto 0);
     signal frac_l : std_logic_vector(11 downto 0);
     signal frac_s : std_logic_vector(11 downto 0);
-    signal frac_s_shift : std_logic_vector(11 downto 0);
-    signal frac_s_add : std_logic_vector(11 downto 0);
-    signal frac_add : std_logic_vector(12 downto 0);
-    signal frac_r : std_logic_vector(11 downto 0);
-    signal frac_r_shift : std_logic_vector(11 downto 0);
+    signal frac_s_shift : std_logic_vector(14 downto 0);
+    signal frac_s_add : std_logic_vector(14 downto 0);
+    signal frac_add : std_logic_vector(15 downto 0);
+    signal frac_r : std_logic_vector(14 downto 0);
+    signal frac_r_shift : std_logic_vector(14 downto 0);
 
     signal abs_x : std_logic_vector(14 downto 0);
     signal abs_y : std_logic_vector(14 downto 0);
@@ -157,24 +145,24 @@ begin
     -- Align the significands
     offset_tmp <= abs(signed(sf_x) - signed(sf_y));
     offset <= std_logic_vector(offset_tmp(3 downto 0)) when offset_tmp < 16 else
-              (others => '1');
+              (others => '1'); -- What is this for??
 
     inst_rshifter : right_shifter_12b
         port map (
             x     => frac_s,
             count => offset,
             y     => frac_s_shift
-        ); -- TODO: Add sticky?
+        );
 
     -- Add the fractions
     frac_s_add <= std_logic_vector(unsigned(not(frac_s_shift)) + 1) when (sign_x xor sign_y) = '1' else
                   frac_s_shift;
-    frac_add <= std_logic_vector(unsigned('0' & frac_l) + unsigned('0' & frac_s_add));
+    frac_add <= std_logic_vector(unsigned('0' & frac_l & "000") + unsigned('0' & frac_s_add));
     
-    ovf_r <= frac_add(12 downto 12);
+    ovf_r <= frac_add(15 downto 15);
 
-    frac_r <= '0' & frac_add(11 downto 1) when ovf_r = "1" else
-              frac_add(11 downto 0);
+    frac_r <= frac_add(15 downto 2) & (frac_add(1) or frac_add(0)) when ovf_r = "1" else
+              frac_add(14 downto 0);
 
     inst_LZcountshift : LZcountshift_12b
         port map (

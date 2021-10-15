@@ -16,11 +16,12 @@
 *.qsf
 *.qws
 *.rpt
+*.sdc
 
 # Python
 *venv/
 
 # Misc
+*.vscode/
 *.png
-posit_input.txt
-posit_output.txt
+*.txt
