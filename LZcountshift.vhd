@@ -75,6 +75,7 @@ begin
     end process;
 
     nlzeros_tmp <= d_3 & d_2 & d_1 & d_0;
+    --nlzeros <= nlzeros_tmp;
     nlzeros <= "1110" when nlzeros_tmp = 15 else
                nlzeros_tmp;
     y <= x_0;

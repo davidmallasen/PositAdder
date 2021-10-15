@@ -6,7 +6,7 @@ use work.all;
 entity posit16_encoder is
     port (
         sign : in  std_logic;
-        sf   : in  std_logic_vector(6 downto 0);
+        sf   : in  std_logic_vector(7 downto 0);
         frac : in  std_logic_vector(14 downto 0);
         inf  : in  std_logic;
         x    : out std_logic_vector(15 downto 0)
@@ -35,9 +35,7 @@ architecture behaviour of posit16_encoder is
             -- Bit to prepend when shifting
             prep_bit : in  std_logic;
             -- Output vector right-shifted count bits
-            y        : out std_logic_vector(17 downto 0);
-            -- Sticky bit (OR of the discarded right bits)
-            s        : out std_logic
+            y        : out std_logic_vector(17 downto 0)
         );
     end component;
 
@@ -48,7 +46,7 @@ begin
     -- Start building the final result
     process(sf, exp, frac)
     begin
-        if sf(6) = '1' then
+        if sf(7) = '1' then
             tmp <= "01" & exp & frac(13 downto 0);
             offset <= not(sf(6 downto 2));
         else
@@ -59,7 +57,7 @@ begin
 
     -- Right-shift 'tmp', 'offset' bits prepending ¬sf[MSB] to the left
     -- and OR the discarded bits from the right.
-    not_sf <= not sf(6);
+    not_sf <= not sf(7);
     shifter_round: right_shifter_round
         port map(
             x        => tmp,

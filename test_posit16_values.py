@@ -21,6 +21,6 @@ for i, out in enumerate(posit_output):
 
     psum = posin1 + posin2
 
-    assert posout == psum, f"{in1}({posin1}) + {in2}({posin2}) returned {out}({posout}) and should be {psum.toBinary()}({psum})"
+    assert posout == psum, f"Test {i+1}: {in1}({posin1}) + {in2}({posin2}) returned {out}({posout}) and should be {psum.toBinary()}({psum})"
 
 print('Test completed successfully!')

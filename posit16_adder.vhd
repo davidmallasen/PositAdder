@@ -51,7 +51,7 @@ architecture behaviour of posit16_adder is
     component posit16_encoder is
         port (
             sign : in  std_logic;
-            sf   : in  std_logic_vector(6 downto 0);
+            sf   : in  std_logic_vector(7 downto 0);
             frac : in  std_logic_vector(14 downto 0);
             inf  : in  std_logic;
             x    : out std_logic_vector(15 downto 0)
@@ -88,14 +88,16 @@ architecture behaviour of posit16_adder is
     signal sf_x : std_logic_vector(6 downto 0);
     signal sf_y : std_logic_vector(6 downto 0);
     signal sf_l : std_logic_vector(6 downto 0);
-    signal sf_r : std_logic_vector(6 downto 0);
+    signal sf_r : std_logic_vector(7 downto 0);
 
     signal offset_tmp : signed(6 downto 0);
     signal offset     : std_logic_vector(3 downto 0);
 
     signal ovf_r : std_logic_vector(0 downto 0);
-
     signal nzeros : unsigned(3 downto 0);
+
+    signal ovf_tmp : std_logic_vector (7 downto 0);
+    signal nzeros_tmp : std_logic_vector (7 downto 0);
 
 begin
 
@@ -176,8 +178,10 @@ begin
     -- Add back the sticky bit
     frac_r_shift_sticky <= frac_r_shift & frac_r(0);
 
+    ovf_tmp <= (7 downto 1 => '0') & ovf_r;
+    nzeros_tmp <= (7 downto 4 => '0') & std_logic_vector(nzeros);
     -- Update the final scaling factor
-    sf_r <= std_logic_vector(signed(sf_l) + signed("0" & ovf_r) - signed("0" & nzeros));
+    sf_r <= std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp));
 
     -- Check for infinity
     inf_r <= inf_x or inf_y;
