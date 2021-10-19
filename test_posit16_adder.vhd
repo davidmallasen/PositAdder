@@ -24,9 +24,9 @@ architecture test of test_posit16_adder is
     signal x : std_logic_vector(15 downto 0);
     signal y : std_logic_vector(15 downto 0);
     signal r : std_logic_vector(15 downto 0);
-
+    
 begin
-
+    
     DUT: posit16_adder
         port map(
             x => x,
@@ -35,35 +35,41 @@ begin
         );
             
     process
+        variable TEST_CASE : integer := 1;  -- Change this to select automatic
+                                            -- test '1' or custom test '0'
         variable line_in  : line;
         variable line_out : line;
         variable add1 : std_logic_vector(15 downto 0);
         variable add2 : std_logic_vector(15 downto 0);
     begin
 
-        file_open(file_in, "posit_input.txt",  read_mode);
-        file_open(file_out, "posit_output.txt", write_mode);
+        if TEST_CASE = 1 then
+            file_open(file_in, "posit_input.txt",  read_mode);
+            file_open(file_out, "posit_output.txt", write_mode);
 
-        while not endfile(file_in) loop
-            readline(file_in, line_in);
-            read(line_in, add1);
-            readline(file_in, line_in);
-            read(line_in, add2);
+            while not endfile(file_in) loop
+                readline(file_in, line_in);
+                read(line_in, add1);
+                readline(file_in, line_in);
+                read(line_in, add2);
 
-            x <= add1;
-            y <= add2;
-     
+                x <= add1;
+                y <= add2;
+        
+                wait for 1 ns;
+        
+                write(line_out, r, right, 16);
+                writeline(file_out, line_out);
+            end loop;
+        
+            file_close(file_in);
+            file_close(file_out);
+        else
+            x <= "1000011100010110";
+            y <= "0000000000000010";
             wait for 1 ns;
-     
-            write(line_out, r, right, 16);
-            writeline(file_out, line_out);
-        end loop;
-     
-        file_close(file_in);
-        file_close(file_out);
+        end if;
          
-        wait for 1 ns;
-
         assert(false)
         report "Simulation finished"
         severity failure;
