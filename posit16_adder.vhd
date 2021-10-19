@@ -91,7 +91,7 @@ architecture behaviour of posit16_adder is
     signal sf_l : std_logic_vector(6 downto 0);
     signal sf_r : std_logic_vector(7 downto 0);
 
-    signal offset_tmp : signed(6 downto 0);
+    signal offset_tmp : unsigned(6 downto 0);
     signal offset     : std_logic_vector(3 downto 0);
 
     signal ovf_r : std_logic_vector(0 downto 0);
@@ -147,7 +147,7 @@ begin
     end process;
 
     -- Align the significands
-    offset_tmp <= abs(signed(sf_x) - signed(sf_y));
+    offset_tmp <= unsigned(abs(signed(sf_x) - signed(sf_y)));
     offset <= std_logic_vector(offset_tmp(3 downto 0)) when offset_tmp < 16 else
               (others => '1');  -- The offset of the right shifter must be at most 15
 
@@ -182,9 +182,10 @@ begin
     ovf_tmp <= (7 downto 1 => '0') & ovf_r;
     nzeros_tmp <= (7 downto 4 => '0') & std_logic_vector(nzeros);
     -- Update the final scaling factor
-    --sf_r <= std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp));
-    sf_r <= "10110100" when nzeros = "1110" else (std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp)));
-    sign_r <= '0' when nzeros = "1110" else sign_l;
+    sf_r <= "10110100" when nzeros = "1110" else 
+            (std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp)));
+    sign_r <= '0' when nzeros = "1110" else 
+              sign_l;
     -- Check for infinity
     inf_r <= inf_x or inf_y;
 
