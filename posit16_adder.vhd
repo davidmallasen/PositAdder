@@ -78,6 +78,7 @@ architecture behaviour of posit16_adder is
     signal frac_r              : std_logic_vector(14 downto 0);
     signal frac_r_shift        : std_logic_vector(13 downto 0);
     signal frac_r_shift_sticky : std_logic_vector(14 downto 0);
+    signal frac_tmp            : std_logic_vector(15 downto 0);
 
     signal abs_x : std_logic_vector(14 downto 0);
     signal abs_y : std_logic_vector(14 downto 0);
@@ -89,6 +90,7 @@ architecture behaviour of posit16_adder is
     signal sf_x : std_logic_vector(6 downto 0);
     signal sf_y : std_logic_vector(6 downto 0);
     signal sf_l : std_logic_vector(6 downto 0);
+    signal sf_s : std_logic_vector(6 downto 0);
     signal sf_r : std_logic_vector(7 downto 0);
 
     signal offset_tmp : unsigned(6 downto 0);
@@ -137,17 +139,19 @@ begin
             sign_l <= sign_x;
             sf_l   <= sf_x;
             frac_l <= frac_x;
+            sf_s   <= sf_y;
             frac_s <= frac_y;
         else
             sign_l <= sign_y;
             sf_l   <= sf_y;
             frac_l <= frac_y;
+            sf_s   <= sf_x;
             frac_s <= frac_x;
         end if;
     end process;
 
     -- Align the significands
-    offset_tmp <= unsigned(abs(signed(sf_x) - signed(sf_y)));
+    offset_tmp <= unsigned(signed(sf_l) - signed(sf_s));
     offset <= std_logic_vector(offset_tmp(3 downto 0)) when offset_tmp < 16 else
               (others => '1');  -- The offset of the right shifter must be at most 15
 
@@ -159,8 +163,9 @@ begin
         );
 
     -- Add the fractions
-    frac_add <= std_logic_vector(unsigned('0' & frac_l & "000") - unsigned('0' & frac_s_shift)) when (sign_x xor sign_y) = '1' else 
-                std_logic_vector(unsigned('0' & frac_l & "000") + unsigned('0' & frac_s_shift));
+    frac_tmp <= std_logic_vector(unsigned(not('0' & frac_s_shift)) + 1) when (sign_x xor sign_y) = '1' else 
+                 '0' & frac_s_shift;
+    frac_add <= std_logic_vector(unsigned('0' & frac_l & "000") + unsigned(frac_tmp));
     
     -- Check for overflow when adding
     ovf_r <= frac_add(15 downto 15);
@@ -179,13 +184,15 @@ begin
     -- Add back the sticky bit
     frac_r_shift_sticky <= frac_r_shift & frac_r(0);
 
+    -- Update the final scaling factor
     ovf_tmp <= (7 downto 1 => '0') & ovf_r;
     nzeros_tmp <= (7 downto 4 => '0') & std_logic_vector(nzeros);
-    -- Update the final scaling factor
+
     sf_r <= "10110100" when nzeros = "1110" else 
             (std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp)));
     sign_r <= '0' when nzeros = "1110" else 
               sign_l;
+    
     -- Check for infinity
     inf_r <= inf_x or inf_y;
 

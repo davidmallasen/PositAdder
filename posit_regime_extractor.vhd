@@ -78,7 +78,7 @@ begin
     -- Compute final regime value 'k'
     nlzeros <= '0' & d_3 & d_2 & d_1 & d_0;
     regime <= nlzeros - 1 when x(14) = '1' else 
-              0 - nlzeros;
+              not(nlzeros) + 1;
 
     -- Revert initial inversion and shift last regime bit
     y <= (not x_0(13 downto 0)) & "0" when x(14) = '1' else 
