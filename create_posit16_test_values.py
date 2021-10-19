@@ -30,6 +30,12 @@ with open('posit_input.txt', 'w') as posit_input:
     # min_num + min_num
     posit_input.write('1000000000000001\n')
     posit_input.write('1000000000000001\n')
+    # 0 + rand_num
+    posit_input.write('0000000000000000\n')
+    posit_input.write('0000110001001011\n')
+    # 0 + (-rand_num)
+    posit_input.write('0000000000000000\n')
+    posit_input.write('1000001001001000\n')
 
     for _ in range(n * 2):
         for _ in range(16):

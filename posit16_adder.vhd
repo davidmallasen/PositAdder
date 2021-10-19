@@ -61,6 +61,7 @@ architecture behaviour of posit16_adder is
     signal sign_x : std_logic;
     signal sign_y : std_logic;
     signal sign_l : std_logic;
+    signal sign_r : std_logic;
 
     signal regime_x : signed(4 downto 0);
     signal regime_y : signed(4 downto 0);
@@ -181,14 +182,15 @@ begin
     ovf_tmp <= (7 downto 1 => '0') & ovf_r;
     nzeros_tmp <= (7 downto 4 => '0') & std_logic_vector(nzeros);
     -- Update the final scaling factor
-    sf_r <= std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp));
-
+    --sf_r <= std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp));
+    sf_r <= "10110100" when nzeros = "1110" else (std_logic_vector(signed(sf_l) + signed(ovf_tmp) - signed(nzeros_tmp)));
+    sign_r <= '0' when nzeros = "1110" else sign_l;
     -- Check for infinity
     inf_r <= inf_x or inf_y;
 
     inst_encoder : posit16_encoder
         port map (
-            sign => sign_l,
+            sign => sign_r,
             sf   => sf_r,
             frac => frac_r_shift_sticky,
             inf  => inf_r,
